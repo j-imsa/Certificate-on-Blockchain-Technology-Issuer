@@ -20,6 +20,13 @@ public class AppExceptionHandler {
         return new ResponseEntity<>(errorMessage, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    // handle a specific exception
+    @ExceptionHandler(value = {WalletServiceException.class})
+    public ResponseEntity<Object> WalletServiceException(WalletServiceException walletServiceException, WebRequest request) {
+        ErrorMessage errorMessage = new ErrorMessage(new Date(), walletServiceException.getMessage());
+        return new ResponseEntity<>(errorMessage, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     // handle all exceptions
     @ExceptionHandler(value = {Exception.class})
     public ResponseEntity<Object> handleUserServiceException(Exception exception, WebRequest request) {
