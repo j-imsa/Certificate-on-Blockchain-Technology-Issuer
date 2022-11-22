@@ -6,6 +6,7 @@ import com.innovationchain.certificateonblockchaintechnologyissuer.ws.io.entity.
 import com.innovationchain.certificateonblockchaintechnologyissuer.ws.service.ConnectionService;
 import com.innovationchain.certificateonblockchaintechnologyissuer.ws.shared.dto.ConnectionDto;
 import com.innovationchain.certificateonblockchaintechnologyissuer.ws.ui.model.response.ErrorMessages;
+import org.reactivestreams.Subscription;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.web3j.protocol.Web3j;
@@ -40,6 +41,21 @@ public class ConnectionServiceImpl implements ConnectionService {
 
             ConnectionDto returnValue = new ConnectionDto();
             BeanUtils.copyProperties(storedConnection, returnValue);
+
+            // Subscribing for New Blocks
+            Subscription subscription = (Subscription) web3.blockFlowable(false).subscribe(block -> {
+                System.out.println("Subscribing for New Blocks => " + block.getBlock().getHash());
+            });
+
+            // Subscribing for New Transactions
+            web3.transactionFlowable().subscribe(tx -> {
+                System.out.println("Subscribing for New Transactions => " + tx.getHash());
+            });
+
+            // Subscribing to pending Transactions
+            web3.pendingTransactionFlowable().subscribe(tx -> {
+                System.out.println("Subscribing to pending Transactions => " + tx.getHash());
+            });
 
             return returnValue;
 
